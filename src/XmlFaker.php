@@ -71,16 +71,16 @@ class XmlFaker
         }
     }
 
-    private function writer($mode, $restriction, $callback, $params)
+    private function writer($mode, $restriction, $callback)
     {
         list($bluePrintNode, $bluePrintNodeName) = $this->extractFirstChild();
 
-        call_user_func_array($callback, array_merge(array("<{$this->rootNode}>"), $params));
+        call_user_func_array($callback, array("<{$this->rootNode}>"));
 
         if ($mode == self::NODE_COUNT_RESTRICTION_MODE) {
             for ($i = 0; $i < $restriction; $i++) {
                 $nextNode = "<$bluePrintNodeName>" . $this->traverse($bluePrintNode) . "</$bluePrintNodeName>";
-                call_user_func_array($callback, array_merge(array($nextNode), $params));
+                call_user_func_array($callback, array($nextNode));
             }
         } else if ($mode == self::BYTE_COUNT_RESTRICTION_MODE) {
             $byteCounter = (strlen($this->rootNode) * 2) + 5;
@@ -93,13 +93,13 @@ class XmlFaker
                     break;
                 }
 
-                call_user_func_array($callback, array_merge(array($nextNode), $params));
+                call_user_func_array($callback, array($nextNode));
 
                 $byteCounter += $upComingByteCount;
             }
         }
 
-        call_user_func_array($callback, array_merge(array("</{$this->rootNode}>"), $params));
+        call_user_func_array($callback, array("</{$this->rootNode}>"));
     }
 
     public function asString($mode, $restriction)
@@ -108,9 +108,9 @@ class XmlFaker
 
         $outputStr = "";
 
-        $this->writer($mode, $restriction, function($xmlData, &$outputStr) {
+        $this->writer($mode, $restriction, function($xmlData) use(&$outputStr) {
             $outputStr .= $xmlData;
-        }, array(&$outputStr));
+        });
 
         return $outputStr;
     }
@@ -125,9 +125,9 @@ class XmlFaker
             throw new \Exception("Couldn't open file handle");
         }
 
-        $this->writer($mode, $restriction, function($xmlData, $handle) {
+        $this->writer($mode, $restriction, function($xmlData) use ($handle) {
             fwrite($handle, $xmlData);
-        }, array($handle));
+        });
 
         fclose($handle);
     }
