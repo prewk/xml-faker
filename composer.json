@@ -1,0 +1,21 @@
+{
+    "name": "prewk/xml-faker",
+    "description": "Create random XML with the help of fzaniotto/Faker.",
+    "homepage": "https://github.com/prewk/xml-faker",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "prewk",
+            "email": "oskar.thornblad@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Prewk\\": "src"
+        }
+    },
+    "require": {
+        "php": ">=5.3.0",
+        "fzaninotto/Faker": "v1.3.0"
+    }
+}
