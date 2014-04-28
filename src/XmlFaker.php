@@ -8,7 +8,7 @@ class XmlFaker
     private $blueprint;
     private $faker;
 
-    private $rootNode = "root-node";
+    private $rootNode;
 
     public function __construct(\SimpleXMLElement $blueprint) {
         $this->blueprint = $blueprint;
@@ -75,7 +75,19 @@ class XmlFaker
     {
         list($bluePrintNode, $bluePrintNodeName) = $this->extractFirstChild();
 
-        call_user_func_array($callback, array("<{$this->rootNode}>"));
+        // Set up root node
+        $this->rootNode = $this->blueprint->getName();
+        $rootAttributes = array();
+        foreach ($this->blueprint->attributes() as $key => $value) {
+            $rootAttributes[] = "$key=\"" . $this->escape((string)$value) . "\"";
+        }
+
+        if (count($rootAttributes) > 0) {
+            $rootNodeStr = "<{$this->rootNode} " . implode(" ", $rootAttributes) . ">";
+        } else {
+            $rootNodeStr = "<{$this->rootNode}>";
+        }
+        call_user_func_array($callback, array($rootNodeStr));
 
         if ($mode == self::NODE_COUNT_RESTRICTION_MODE) {
             for ($i = 0; $i < $restriction; $i++) {
@@ -103,9 +115,7 @@ class XmlFaker
     }
 
     public function asString($mode, $restriction)
-    {   
-        list($bluePrintNode, $bluePrintNodeName) = $this->extractFirstChild();
-
+    {
         $outputStr = "";
 
         $this->writer($mode, $restriction, function($xmlData) use(&$outputStr) {
@@ -117,8 +127,6 @@ class XmlFaker
 
     public function asFile($filename, $mode, $restriction)
     {
-        list($bluePrintNode, $bluePrintNodeName) = $this->extractFirstChild();
-
         $handle = fopen($filename, "w");
 
         if ($handle === false) {
@@ -134,8 +142,6 @@ class XmlFaker
 
     public function asStdout($mode, $restriction)
     {
-        list($bluePrintNode, $bluePrintNodeName) = $this->extractFirstChild();
-
         $this->writer($mode, $restriction, function($xmlData) {
             fwrite(STDOUT, $xmlData);
         });

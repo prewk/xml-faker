@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<root>
-	<node>
+<special-root special-attribute="123">
+	<node test-attribute-1="456" test-attribute-2="asdf">
 		<child-a>Foo</child-a>
 		<child-b>Bar</child-b>
 		<child-c>
@@ -12,4 +12,4 @@
 			</child-e>
 		</child-c>
 	</node>
-</root>
+</special-root>
