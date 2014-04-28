@@ -131,5 +131,14 @@ class XmlFaker
 
         fclose($handle);
     }
+
+    public function asStdout($mode, $restriction)
+    {
+        list($bluePrintNode, $bluePrintNodeName) = $this->extractFirstChild();
+
+        $this->writer($mode, $restriction, function($xmlData) {
+            fwrite(STDOUT, $xmlData);
+        });
+    }
 }
 
