@@ -67,13 +67,17 @@ class XmlFaker
 
     private function extractFirstChild() {
         foreach ($this->blueprint as $nodeName => $node) {
-            return array($node, $nodeName);
+            $flattenedAttributes = array();
+            foreach ($node->attributes() as $key => $value) {
+                $flattenedAttributes[] = "$key=\"" . $this->escape((string)$value) . "\"";
+            }
+            return array($node, $nodeName, $flattenedAttributes);
         }
     }
 
     private function writer($mode, $restriction, $callback)
     {
-        list($bluePrintNode, $bluePrintNodeName) = $this->extractFirstChild();
+        list($bluePrintNode, $bluePrintNodeName, $bluePrintNodeAttributes) = $this->extractFirstChild();
 
         // Set up root node
         $this->rootNode = $this->blueprint->getName();
@@ -91,14 +95,26 @@ class XmlFaker
 
         if ($mode == self::NODE_COUNT_RESTRICTION_MODE) {
             for ($i = 0; $i < $restriction; $i++) {
-                $nextNode = "<$bluePrintNodeName>" . $this->traverse($bluePrintNode) . "</$bluePrintNodeName>";
+                if (count($bluePrintNodeAttributes) > 0) {
+                    $nodeOpeningElem = "<$bluePrintNodeName " . implode(" ", $bluePrintNodeAttributes) . ">";
+                } else {
+                    $nodeOpeningElem = "<$bluePrintNodeName>";
+                }
+
+                $nextNode = $nodeOpeningElem . $this->traverse($bluePrintNode) . "</$bluePrintNodeName>";
                 call_user_func_array($callback, array($nextNode));
             }
         } else if ($mode == self::BYTE_COUNT_RESTRICTION_MODE) {
             $byteCounter = (strlen($this->rootNode) * 2) + 5;
 
             while (true) {
-                $nextNode = "<$bluePrintNodeName>" . $this->traverse($bluePrintNode) . "</$bluePrintNodeName>";
+                if (count($bluePrintNodeAttributes) > 0) {
+                    $nodeOpeningElem = "<$bluePrintNodeName " . implode(" ", $bluePrintNodeAttributes) . ">";
+                } else {
+                    $nodeOpeningElem = "<$bluePrintNodeName>";
+                }
+
+                $nextNode = $nodeOpeningElem . $this->traverse($bluePrintNode) . "</$bluePrintNodeName>";
                 $upComingByteCount = strlen($nextNode);
 
                 if ($byteCounter + $upComingByteCount > $restriction) {

@@ -45,4 +45,30 @@ class XmlFakerTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals($blueprintRootAttributes, $generatedRootAttributes, "Test if generated root element attributes are the same as in the blueprint");
     }
+
+    public function testKeepChildNode()
+    {
+        $blueprintXml = simplexml_load_file(__dir__ . "/simpleBlueprint.xml");
+        $generatedXml = simplexml_load_string($this->getXmlFromSimpleBlueprint());
+
+        $blueprintNode = $blueprintXml->specialNode;
+        $generatedNode = $generatedXml->specialNode;
+
+        $this->assertEquals($blueprintNode->getName(), $generatedNode->getName(), "Test if generated child element name is the same as in the blueprint");
+
+        $blueprintNodeAttributes = array();
+        foreach ($blueprintNode->attributes() as $key => $value) {
+            $blueprintNodeAttributes[$key] = (string)$value;
+        }
+        
+        $generatedNodeAttributes = array();
+        foreach ($generatedNode->attributes() as $key => $value) {
+            $generatedNodeAttributes[$key] = (string)$value;
+        }
+
+        ksort($blueprintNodeAttributes);
+        ksort($generatedNodeAttributes);
+
+        $this->assertEquals($blueprintNodeAttributes, $generatedNodeAttributes, "Test if generated child element attributes are the same as in the blueprint");
+    }
 }
