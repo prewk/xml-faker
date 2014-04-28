@@ -1,4 +1,4 @@
-xml-faker [![Build Status](https://travis-ci.org/prewk/xml-faker.svg?branch=0.0.7)](https://travis-ci.org/prewk/xml-faker)
+xml-faker [![Build Status](https://travis-ci.org/prewk/xml-faker.svg?branch=master)](https://travis-ci.org/prewk/xml-faker)
 =========
 
 Create fake XML with the help of [fzaninotto/Faker](https://github.com/fzaninotto/Faker)
