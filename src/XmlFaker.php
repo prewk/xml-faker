@@ -4,6 +4,7 @@ class XmlFaker
 {
     const BYTE_COUNT_RESTRICTION_MODE = 0;
     const NODE_COUNT_RESTRICTION_MODE = 1;
+    const NODE_CLONE_MODE = 2;
 
     private $blueprint;
     private $faker;
@@ -93,7 +94,7 @@ class XmlFaker
         }
         call_user_func_array($callback, array($rootNodeStr));
 
-        if ($mode == self::NODE_COUNT_RESTRICTION_MODE) {
+        if (self::NODE_COUNT_RESTRICTION_MODE === $mode) {
             for ($i = 0; $i < $restriction; $i++) {
                 if (count($bluePrintNodeAttributes) > 0) {
                     $nodeOpeningElem = "<$bluePrintNodeName " . implode(" ", $bluePrintNodeAttributes) . ">";
@@ -104,7 +105,7 @@ class XmlFaker
                 $nextNode = $nodeOpeningElem . $this->traverse($bluePrintNode) . "</$bluePrintNodeName>";
                 call_user_func_array($callback, array($nextNode));
             }
-        } else if ($mode == self::BYTE_COUNT_RESTRICTION_MODE) {
+        } else if (self::BYTE_COUNT_RESTRICTION_MODE === $mode) {
             $byteCounter = (strlen($this->rootNode) * 2) + 5;
 
             while (true) {
@@ -124,6 +125,16 @@ class XmlFaker
                 call_user_func_array($callback, array($nextNode));
 
                 $byteCounter += $upComingByteCount;
+            }
+        } else if (self::NODE_CLONE_MODE === $mode) {
+            if (count($bluePrintNodeAttributes) > 0) {
+                $nodeOpeningElem = "<$bluePrintNodeName " . implode(" ", $bluePrintNodeAttributes) . ">";
+            } else {
+                $nodeOpeningElem = "<$bluePrintNodeName>";
+            }
+            $clonee = $nodeOpeningElem . $this->traverse($bluePrintNode) . "</$bluePrintNodeName>";
+            for ($i = 0; $i < $restriction; $i++) {
+                call_user_func_array($callback, array($clonee));
             }
         }
 
