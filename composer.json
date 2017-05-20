@@ -16,6 +16,6 @@
     },
     "require": {
         "php": ">=5.3.0",
-        "fzaninotto/Faker": "v1.3.0"
+        "fzaninotto/Faker": "1.6.0"
     }
 }
